@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator Pontaj — Medici FPlayT (Dark)</title>
+    <link rel="icon" href="FP.png" />
+    <style>
+      /* === Variables & Reset === */
+      :root{
+        --bg:#0b1220;
+        --panel:#0f1724;
+        --muted:#9aa6b2;
+        --text:#e6eef6;
+        --accent:#4f8cff;
+        --accent-2:#7dd3fc;
+        --danger:#ff6b6b;
+        --glass: rgba(255,255,255,0.03);
+        --card-shadow: 0 6px 24px rgba(2,6,23,0.6);
+        --radius:14px;
+        --glass-border: rgba(255,255,255,0.04);
+      }
+
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{height:100%}
+      body{
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        background: linear-gradient(180deg,var(--bg) 0%, #081018 100%);
+        color:var(--text);
+        padding:28px; -webkit-font-smoothing:antialiased;
+        -moz-osx-font-smoothing:grayscale; line-height:1.5;
+      }
+
+      /* container */
+      .wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr;gap:26px;align-items:start}
+      @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:0 16px}}
+
+      /* Card */
+      .card{background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.02));border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden}
+      .p-32{padding:32px}
+
+      /* Header */
+      .brand{display:flex;align-items:center;gap:14px}
+      .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#06203a;font-size:20px}
+      h1{font-size:24px;color:var(--text);letter-spacing:-0.01em}
+      .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
+
+      /* Controls */
+      .controls{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+      .btn{border:0;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer}
+      .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#04122a;box-shadow:0 8px 30px rgba(79,140,255,0.12)}
+      .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+      .btn-danger{background:linear-gradient(90deg,#ff6b6b,#ff4d4d);color:#081018}
+      .small{padding:8px 12px;font-size:13px}
+
+      /* Status card */
+      .status{display:flex;align-items:center;justify-content:space-between;gap:16px}
+      .status-left{display:flex;gap:14px;align-items:center}
+      .status-info{min-width:0}
+      .status-info h3{font-size:18px;margin-bottom:6px}
+      .status-info p{color:var(--muted);font-size:13px}
+      .status-actions{display:flex;gap:8px}
+
+      /* Sidebar */
+      .sidebar{padding:26px;display:flex;flex-direction:column;gap:18px;height:fit-content}
+      .search-input{width:100%;padding:12px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);outline:none}
+      .entries{max-height:520px;overflow:auto;padding-right:6px}
+      .day-summary{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+      .entry{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:12px;border-radius:8px;margin-left:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.02)}
+      .meta{color:var(--muted);font-size:13px}
+      .pill{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);}
+      .delete{background:transparent;border:0;color:var(--danger);font-weight:700;cursor:pointer}
+
+      /* Manual form */
+      .manual{margin-top:16px;padding:14px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);display:none}
+      .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+      input[type="time"]{width:100%;padding:10px;border-radius:9px;border:1px solid var(--glass-border);background:transparent;color:var(--text)}
+
+      /* Footer info */
+      .info{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+
+      /* Toast */
+      .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:linear-gradient(90deg,#071428,#0a2136);padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 12px 40px rgba(2,6,23,0.6);display:none}
+
+      /* Modal */
+      .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:40;visibility:hidden;opacity:0;transition:all .18s}
+      .modal.active{visibility:visible;opacity:1}
+      .modal-card{width:460px;background:linear-gradient(180deg,var(--panel), #081018);border-radius:12px;padding:18px;border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(2,6,23,0.6)}
+      .modal-title{font-weight:700;color:var(--danger);margin-bottom:6px}
+
+      /* small helpers */
+      .muted{color:var(--muted)}
+      .flex{display:flex}
+      .gap-8{gap:8px}
+      .right{text-align:right}
+      .empty{padding:36px;text-align:center;color:var(--muted)}
+
+      /* scrollbar */
+      .entries::-webkit-scrollbar{width:8px}
+      .entries::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04);border-radius:6px}
+
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- MAIN -->
+      <section class="card p-32">
+        <div class="brand">
+              <img src="FP.png" alt="Logo FP" style="width:52px;height:52px;border-radius:10px;object-fit:cover;">
+          <div>
+            <h1>Calculator Pontaj — Medici FPlayT</h1>
+            <!-- <div class="subtitle">Interfață modernă (dark) — eficient pentru ture și rapoarte</div> -->
+          </div>
+        </div>
+
+        <div style="margin-top:20px;" class="status">
+          <div class="status-left">
+            <div class="status-info">
+              <h3 id="statusTitle">Niciun pontaj activ</h3>
+              <p id="statusSub" class="muted">Apasă <strong>Clock‑IN</strong> ca să începi</p>
+            </div>
+          </div>
+
+          <div class="status-actions">
+            <button class="btn btn-primary" id="clockInBtn" onclick="clockIn()">Clock‑IN</button>
+            <button class="btn btn-ghost" id="clockOutBtn" onclick="clockOut()">Clock‑OUT</button>
+            <button class="btn small btn-ghost" onclick="toggleManualForm()">Manual</button>
+            <button class="btn small btn-ghost" onclick="forceCloseActive()">Închide forțat</button>
+          </div>
+        </div>
+
+        <div class="manual" id="manualForm">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <strong>Adaugă pontaj manual</strong>
+            <button class="btn small btn-ghost" onclick="toggleManualForm()">Închide</button>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label for="manualClockIn">Ora Clock‑IN</label>
+              <input type="time" id="manualClockIn">
+            </div>
+            <div>
+              <label for="manualClockOut">Ora Clock‑OUT</label>
+              <input type="time" id="manualClockOut">
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-primary small" onclick="saveManualEntry()">Salvează</button>
+            <button class="btn btn-ghost small" onclick="toggleManualForm()">Anulează</button>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;display:grid;grid-template-columns:1fr 280px;gap:18px;align-items:start">
+          <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)">
+            <h4 style="margin-bottom:12px">Ultimul Pontaj</h4>
+            <div id="currentActive" class="muted">Niciun pontaj activ</div>
+            <!-- <div style="margin-top:12px;color:var(--muted);font-size:13px">Aici vezi pontajul curent deschis și poți copia sau finaliza pontajul rapid.</div> -->
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="muted">Timp total:</div>
+              <div class="pill" id="dailyQuick">0h 0m</div>
+            </div>
+
+            <div style="background:var(--glass);padding:10px;border-radius:10px;border:1px solid var(--glass-border);display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:8px">
+                <!-- <button class="btn small btn-primary" onclick="displayPontaje()">Actualizează</button> -->
+                <button class="btn small btn-danger" onclick="showConfirmModal('Șterge toate pontajele?','Această acțiune nu poate fi anulată și va șterge permanent toate datele!', clearAllPontajeConfirmed)">Șterge tot</button>
+              </div>
+              <div style="font-size:13px;color:var(--muted)">Pontajele se păstrează pe acest site.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px" class="info">Calculator Pontaje Medici - FPLAYT</div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card sidebar">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Istoric Pontaje</h3>
+        </div>
+
+        <input id="searchDay" class="search-input" placeholder="Caută după dată (ex: 02.09.2025)" oninput="displayPontaje()" />
+
+        <div class="entries" id="pontaje">
+          <div class="empty">Nu există pontaje înregistrate încă</div>
+        </div>
+
+        <div style="margin-top:6px;font-size:13px;color:var(--muted)">Caută sau șterge rapid pontajele. Pontajele sub 30 minute se sterg automat.</div>
+      </aside>
+
+      <!-- FOOTER INFO -->
+      <div class="card p-32" style="grid-column:span 2; display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+          <div>
+            <strong>Funcționalități</strong>
+            <div class="muted">Clock‑IN / Clock‑OUT • Rotunjire la 5 minute • Închidere automată peste miezul nopții</div>
+          </div>
+          <div class="muted">MEDICI • FPLAYT</div>
+        </div>
+        <!-- <div class="muted" style="font-size:13px">Dezvoltator: Madanu • Pentru probleme: .madanu (Discord)</div> -->
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <!-- MODAL -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <div style="font-size:24px">⚠️</div>
+          <div>
+            <div id="modalTitle" class="modal-title">Confirmare</div>
+            <div id="modalMessage" class="muted" style="font-size:13px">Ești sigur?</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button id="modalCancel" class="btn btn-ghost small">Anulează</button>
+          <button id="modalConfirm" class="btn btn-danger small">Da</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // === Păstrăm logica originală, adaptată la noul layout ===
+      let pontaje = {};
+      let currentActiveIndex = null;
+
+      function saveToStorage(){
+        try{
+          localStorage.setItem('pontaje', JSON.stringify(pontaje));
+          localStorage.setItem('currentActiveIndex', JSON.stringify(currentActiveIndex));
+        }catch(e){
+          console.warn('LocalStorage indisponibil — folosește variabila globală');
+          window.pontajeData = pontaje;
+          window.currentActiveData = currentActiveIndex;
+        }
+      }
+
+      function loadFromStorage(){
+        try{
+          const s = localStorage.getItem('pontaje');
+          const a = localStorage.getItem('currentActiveIndex');
+          if(s) pontaje = JSON.parse(s);
+          if(a) currentActiveIndex = JSON.parse(a);
+        }catch(e){
+          if(window.pontajeData) pontaje = window.pontajeData;
+          if(window.currentActiveData) currentActiveIndex = window.currentActiveData;
+        }
+        displayCurrentActive();
+        displayPontaje();
+      }
+
+      function showConfirmModal(title, message, cb){
+        const modal = document.getElementById('confirmModal');
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+
+        const confirmBtn = document.getElementById('modalConfirm');
+        const cancelBtn = document.getElementById('modalCancel');
+
+        // cleanup previous listeners
+        const newConfirm = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+        const newCancel = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+        newConfirm.addEventListener('click', ()=>{ modal.classList.remove('active'); cb(); });
+        newCancel.addEventListener('click', ()=>{ modal.classList.remove('active'); });
+
+        modal.classList.add('active');
+      }
+
+      function hideModal(){ document.getElementById('confirmModal').classList.remove('active'); }
+
+      function showToast(msg, dur=3000){
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.style.display='block';
+        setTimeout(()=>{ t.style.display='none'; }, dur);
+      }
+
+      function roundToFiveMinutes(date){ return new Date(Math.round(date.getTime()/(1000*60*5)) * 1000*60*5); }
+      function formatTime(date){ return new Date(date).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit',hour12:false}); }
+      function formatDate(date){ return new Date(date).toLocaleDateString('ro-RO',{year:'numeric',month:'2-digit',day:'2-digit'}); }
+      function formatDateDisplay(date){ return new Date(date).toLocaleDateString('ro-RO',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+      function calculateDuration(a,b){ return Math.round((new Date(b)-new Date(a))/60000); }
+
+      function displayCurrentActive(){
+        const el = document.getElementById('currentActive');
+        const title = document.getElementById('statusTitle');
+        const sub = document.getElementById('statusSub');
+        if(!currentActiveIndex){ el.textContent='Niciun pontaj activ'; title.textContent='Niciun pontaj activ'; sub.textContent='Apasă Clock‑IN ca să începi'; return; }
+
+        const entry = pontaje[currentActiveIndex.data]?.[currentActiveIndex.index];
+        if(!entry){ currentActiveIndex = null; saveToStorage(); displayCurrentActive(); return; }
+
+        const now = new Date();
+        const duration = Math.round((now - new Date(entry.clockIn))/60000);
+        el.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px"><div><strong>Înregistrat:</strong> ${formatTime(entry.clockIn)}</div><div class="muted">${formatDateDisplay(entry.clockIn)} — ${duration} minute</div></div>`;
+        title.textContent = `Pontaj activ — ${formatTime(entry.clockIn)}`;
+        sub.textContent = `${duration} minute de la începere`;
+        document.getElementById('dailyQuick').textContent = `${Math.floor(duration/60)}h ${duration%60}m`;
+      }
+
+      function clockIn(){
+        if(currentActiveIndex){ showToast('Există deja un pontaj deschis!'); return; }
+        const now = roundToFiveMinutes(new Date());
+        const dateKey = formatDate(now);
+        if(!pontaje[dateKey]) pontaje[dateKey]=[];
+        pontaje[dateKey].push({clockIn: now, clockOut: null});
+        currentActiveIndex = {data:dateKey, index: pontaje[dateKey].length-1};
+        saveToStorage(); displayCurrentActive(); displayPontaje(); showToast(`Clock‑IN la ${formatTime(now)}`);
+      }
+
+      function clockOut(){ if(!currentActiveIndex){ showToast('Nu există pontaj activ'); return; }
+        showConfirmModal('Confirmare Clock‑OUT','Ești sigur că vrei să faci clock‑out acum?', clockOutConfirmed);
+      }
+
+      function clockOutConfirmed(){
+        const entry = pontaje[currentActiveIndex.data][currentActiveIndex.index];
+        const out = roundToFiveMinutes(new Date());
+        entry.clockOut = out;
+        const mins = calculateDuration(entry.clockIn, entry.clockOut);
+        if(mins < 30){ // anulează
+          showToast('Pontaj anulat (sub 30 minute)');
+          pontaje[currentActiveIndex.data].splice(currentActiveIndex.index,1);
+          if(pontaje[currentActiveIndex.data].length===0) delete pontaje[currentActiveIndex.data];
+          currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje(); return;
+        }
+        showToast(`Pontaj finalizat: ${mins} minute`);
+        currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje();
+      }
+
+      function forceCloseActive(){ if(!currentActiveIndex){ showToast('Nu există pontaj activ'); return; }
+        showConfirmModal('Închide forțat pontajul?','Ești sigur că vrei să închizi forțat pontajul activ? Această acțiune nu poate fi anulată!', forceCloseActiveConfirmed);
+      }
+      function forceCloseActiveConfirmed(){ if(!currentActiveIndex) return; pontaje[currentActiveIndex.data].splice(currentActiveIndex.index,1); if(pontaje[currentActiveIndex.data].length===0) delete pontaje[currentActiveIndex.data]; currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje(); showToast('Pontaj închis forțat și șters!'); }
+
+      function deletePontaj(dateKey,index){ showConfirmModal('Șterge pontajul?','Ești sigur că vrei să ștergi acest pontaj?', ()=>{ deletePontajConfirmed(dateKey,index); }); }
+      function deletePontajConfirmed(dateKey,index){ pontaje[dateKey].splice(index,1); if(pontaje[dateKey].length===0) delete pontaje[dateKey]; saveToStorage(); displayPontaje(); showToast('Pontaj șters!'); }
+
+      function calculateDailyTotal(dateKey){ if(!pontaje[dateKey]) return 0; let total=0; pontaje[dateKey].forEach(e=>{ if(e.clockOut){ const d=calculateDuration(e.clockIn,e.clockOut); if(d>=30) total+=d; } }); return total; }
+
+      function displayPontaje(){
+        const searchTerm = document.getElementById('searchDay').value.trim().toLowerCase();
+        const container = document.getElementById('pontaje'); container.innerHTML='';
+
+        const dayGroups = {};
+        Object.keys(pontaje).filter(d=> searchTerm ? d.toLowerCase().includes(searchTerm) : true).forEach(date=>{
+          const valid = pontaje[date].filter(e=> e.clockOut && calculateDuration(e.clockIn,e.clockOut)>=30 );
+          if(valid.length>0) dayGroups[date] = valid.map(e=> ({entry:e, realIndex: pontaje[date].indexOf(e)}));
+        });
+
+        if(Object.keys(dayGroups).length===0){ container.innerHTML = `<div class="empty">${searchTerm? 'Nu s-au găsit pontaje pentru căutarea specificată' : 'Nu există pontaje înregistrate încă'}</div>`; return; }
+
+        const sorted = Object.keys(dayGroups).sort((a,b)=> new Date(b.split('.').reverse().join('-')) - new Date(a.split('.').reverse().join('-')) );
+        sorted.forEach(dateKey=>{
+          const items = dayGroups[dateKey];
+          const dailyTotal = calculateDailyTotal(dateKey);
+
+          const dayEl = document.createElement('div'); dayEl.className='day-summary';
+          const dateForDisplay = new Date(dateKey.split('.').reverse().join('-'));
+          dayEl.innerHTML = `<div>${formatDateDisplay(dateForDisplay)}</div><div><strong>${Math.floor(dailyTotal/60)}h ${dailyTotal%60}m</strong> (${dailyTotal} min)</div>`;
+          container.appendChild(dayEl);
+
+          items.forEach(({entry, realIndex})=>{
+            const mins = calculateDuration(entry.clockIn, entry.clockOut);
+            const eDiv = document.createElement('div'); eDiv.className='entry';
+            eDiv.innerHTML = `<div><div style=\"font-weight:600\">${formatTime(entry.clockIn)} → ${formatTime(entry.clockOut)}</div><div class=\"meta\">${mins} minute ${entry.manual? '• manual':''}</div></div><div style=\"display:flex;flex-direction:column;gap:6px;align-items:flex-end\"><button class=\"delete\" onclick=\"deletePontaj('${dateKey}', ${realIndex})\">×</button></div>`;
+            container.appendChild(eDiv);
+          });
+        });
+      }
+
+      function clearAllPontajeConfirmed(){ if(currentActiveIndex){ showToast('Nu poți șterge datele cu pontaj activ!'); return; } if(Object.keys(pontaje).length===0){ showToast('Nu există pontaje de șters!'); return; } pontaje={}; saveToStorage(); displayPontaje(); showToast('Toate pontajele au fost șterse!'); }
+
+      function toggleManualForm(){ const f = document.getElementById('manualForm'); if(f.style.display==='block'){ f.style.display='none'; document.getElementById('manualClockIn').value=''; document.getElementById('manualClockOut').value=''; } else f.style.display='block'; }
+
+      function saveManualEntry(){ const ci = document.getElementById('manualClockIn').value; const co = document.getElementById('manualClockOut').value; if(!ci || !co){ showToast('Te rog completează toate câmpurile!'); return; }
+        const today = new Date(); const dateString = today.toISOString().split('T')[0];
+        const inDt = new Date(`${dateString}T${ci}:00`); const outDt = new Date(`${dateString}T${co}:00`);
+        if(outDt <= inDt){ showToast('Ora de ieșire trebuie să fie după ora de intrare!'); return; }
+        const dur = calculateDuration(inDt,outDt); if(dur < 30){ showToast('Durata trebuie să fie de cel puțin 30 de minute!'); return; }
+        const dk = formatDate(inDt); if(!pontaje[dk]) pontaje[dk]=[]; pontaje[dk].push({clockIn:inDt, clockOut:outDt, manual:true}); saveToStorage(); displayPontaje(); toggleManualForm(); showToast(`Pontaj manual adăugat: ${dur} minute`);
+      }
+
+      // init
+      document.addEventListener('DOMContentLoaded', ()=>{ loadFromStorage(); });
+
+      // auto-update current active display minute-by-minute
+      setInterval(()=>{ if(currentActiveIndex) displayCurrentActive(); }, 60000);
+
+      // close modal when clicking outside
+      document.getElementById('confirmModal').addEventListener('click', (e)=>{ if(e.target.id==='confirmModal') hideModal(); });
+
+    </script>
+  </body>
+</html>
