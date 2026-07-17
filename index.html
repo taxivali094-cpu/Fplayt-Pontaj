@@ -1,404 +1,792 @@
 <!DOCTYPE html>
 <html lang="ro">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculator Pontaj — Medici FPlayT (Dark)</title>
-    <link rel="icon" href="DS.png" />
+<head>
+    <meta charset="UTF-8">
+    <title>Regulament Crystal Roleplay</title>
     <style>
-      /* === Variables & Reset === */
-      :root{
-        --bg:#0b1220;
-        --panel:#0f1724;
-        --muted:#9aa6b2;
-        --text:#e6eef6;
-        --accent:#4f8cff;
-        --accent-2:#7dd3fc;
-        --danger:#ff6b6b;
-        --glass: rgba(255,255,255,0.03);
-        --card-shadow: 0 6px 24px rgba(2,6,23,0.6);
-        --radius:14px;
-        --glass-border: rgba(255,255,255,0.04);
-      }
+        :root {
+            --turcoaz: #2dd4bf;
+            --negru-bg: #050505;
+            --negru-card: #111111;
+            --text-alb: #f1f5f9;
+            --text-gri: #94a3b8;
+        }
 
-      *{box-sizing:border-box;margin:0;padding:0}
-      html,body{height:100%}
-      body{
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-        background: linear-gradient(180deg,var(--bg) 0%, #081018 100%);
-        color:var(--text);
-        padding:28px; -webkit-font-smoothing:antialiased;
-        -moz-osx-font-smoothing:grayscale; line-height:1.5;
-      }
+body {
+    font-family: 'Inter', sans-serif;
+    /* Gradientul "dansant" fara zone statice */
+    background: linear-gradient(125deg, #050505 0%, #112e2c 50%, #050505 100%);
+    background-size: 600% 600%;
+    animation: dance 20s ease infinite;
+    background-attachment: fixed;
+    color: var(--text-alb);
+    padding: 40px 20px;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: auto;
+    min-height: 100vh;
+}
 
-      /* container */
-      .wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr;gap:26px;align-items:start}
-      @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:0 16px}}
+/* Stilul implicit (închis) - săgeata arată spre stânga */
+.rule h3 span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    transform: rotate(-90deg); 
+}
 
-      /* Card */
-      .card{background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.02));border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden}
-      .p-32{padding:32px}
+/* Când este deschis, săgeata se rotește în sus */
+.rule.active h3 span {
+    transform: rotate(0deg); /* Rotește săgeata 90 de grade invers acelor de ceasornic pentru a indica în sus */
+}
 
-      /* Header */
-      .brand{display:flex;align-items:center;gap:14px}
-      .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#06203a;font-size:20px}
-      h1{font-size:24px;color:var(--text);letter-spacing:-0.01em}
-      .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
+@keyframes dance {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-      /* Controls */
-      .controls{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
-      .btn{border:0;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer}
-      .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#04122a;box-shadow:0 8px 30px rgba(79,140,255,0.12)}
-      .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
-      .btn-danger{background:linear-gradient(90deg,#ff6b6b,#ff4d4d);color:#081018}
-      .small{padding:8px 12px;font-size:13px}
+        h1 { text-align: center; color: var(--turcoaz); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; }
+        h2 { color: var(--turcoaz); margin-top: 50px; border-bottom: 2px solid var(--turcoaz); padding-bottom: 10px; }
 
-      /* Status card */
-      .status{display:flex;align-items:center;justify-content:space-between;gap:16px}
-      .status-left{display:flex;gap:14px;align-items:center}
-      .status-info{min-width:0}
-      .status-info h3{font-size:18px;margin-bottom:6px}
-      .status-info p{color:var(--muted);font-size:13px}
-      .status-actions{display:flex;gap:8px}
+        .rule {
+            background: var(--negru-card);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #222;
+            transition: all 0.3s ease;
+        }
 
-      /* Sidebar */
-      .sidebar{padding:26px;display:flex;flex-direction:column;gap:18px;height:fit-content}
-      .search-input{width:100%;padding:12px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);outline:none}
-      .entries{max-height:520px;overflow:auto;padding-right:6px}
-      .day-summary{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-      .entry{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:12px;border-radius:8px;margin-left:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.02)}
-      .meta{color:var(--muted);font-size:13px}
-      .pill{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);}
-      .delete{background:transparent;border:0;color:var(--danger);font-weight:700;cursor:pointer}
+        .rule:hover { border-color: var(--turcoaz); }
 
-      /* Manual form */
-      .manual{margin-top:16px;padding:14px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);display:none}
-      .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-      label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-      input[type="time"]{width:100%;padding:10px;border-radius:9px;border:1px solid var(--glass-border);background:transparent;color:var(--text)}
+        h3 {
+            margin: 0;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+            color: var(--text-alb);
+        }
 
-      /* Footer info */
-      .info{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+        h3 span { color: var(--turcoaz); font-weight: bold; }
 
-      /* Toast */
-      .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:linear-gradient(90deg,#071428,#0a2136);padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 12px 40px rgba(2,6,23,0.6);display:none}
-
-      /* Modal */
-      .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:40;visibility:hidden;opacity:0;transition:all .18s}
-      .modal.active{visibility:visible;opacity:1}
-      .modal-card{width:460px;background:linear-gradient(180deg,var(--panel), #081018);border-radius:12px;padding:18px;border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(2,6,23,0.6)}
-      .modal-title{font-weight:700;color:var(--danger);margin-bottom:6px}
-
-      /* small helpers */
-      .muted{color:var(--muted)}
-      .flex{display:flex}
-      .gap-8{gap:8px}
-      .right{text-align:right}
-      .empty{padding:36px;text-align:center;color:var(--muted)}
-
-      /* scrollbar */
-      .entries::-webkit-scrollbar{width:8px}
-      .entries::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04);border-radius:6px}
-
+        .content {
+            display: none;
+            padding: 0 20px 20px 20px;
+            color: var(--text-gri);
+            font-size: 0.95rem;
+            border-top: 1px solid #222;
+            padding-top: 15px;
+        }
     </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <!-- MAIN -->
-      <section class="card p-32">
-        <div class="brand">
-              <img src="DS.png" alt="Logo FP" style="width:52px;height:52px;border-radius:10px;object-fit:cover;">
-          <div>
-            <h1>Calculator Pontaj — Medici FPlayT</h1>
-            <!-- <div class="subtitle">Interfață modernă (dark) — eficient pentru ture și rapoarte</div> -->
-          </div>
-        </div>
+</head>
+<body>
 
-        <div style="margin-top:20px;" class="status">
-          <div class="status-left">
-            <div class="status-info">
-              <h3 id="statusTitle">Niciun pontaj activ</h3>
-              <p id="statusSub" class="muted">Apasă <strong>Clock‑IN</strong> ca să începi</p>
-            </div>
-          </div>
+<h1>REGULAMENT CRYSTAL ROLEPLAY</h1>
 
-          <div class="status-actions">
-            <button class="btn btn-primary" id="clockInBtn" onclick="clockIn()">Clock‑IN</button>
-            <button class="btn btn-ghost" id="clockOutBtn" onclick="clockOut()">Clock‑OUT</button>
-            <button class="btn small btn-ghost" onclick="toggleManualForm()">Manual</button>
-            <button class="btn small btn-ghost" onclick="forceCloseActive()">Închide forțat</button>
-          </div>
-        </div>
-
-        <div class="manual" id="manualForm">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <strong>Adaugă pontaj manual</strong>
-            <button class="btn small btn-ghost" onclick="toggleManualForm()">Închide</button>
-          </div>
-          <div class="grid-2">
-            <div>
-              <label for="manualClockIn">Ora Clock‑IN</label>
-              <input type="time" id="manualClockIn">
-            </div>
-            <div>
-              <label for="manualClockOut">Ora Clock‑OUT</label>
-              <input type="time" id="manualClockOut">
-            </div>
-          </div>
-          <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-            <button class="btn btn-primary small" onclick="saveManualEntry()">Salvează</button>
-            <button class="btn btn-ghost small" onclick="toggleManualForm()">Anulează</button>
-          </div>
-        </div>
-
-        <div style="margin-top:22px;display:grid;grid-template-columns:1fr 280px;gap:18px;align-items:start">
-          <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)">
-            <h4 style="margin-bottom:12px">Ultimul Pontaj</h4>
-            <div id="currentActive" class="muted">Niciun pontaj activ</div>
-            <!-- <div style="margin-top:12px;color:var(--muted);font-size:13px">Aici vezi pontajul curent deschis și poți copia sau finaliza pontajul rapid.</div> -->
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div class="muted">Timp total:</div>
-              <div class="pill" id="dailyQuick">0h 0m</div>
-            </div>
-
-            <div style="background:var(--glass);padding:10px;border-radius:10px;border:1px solid var(--glass-border);display:flex;flex-direction:column;gap:8px">
-              <div style="display:flex;gap:8px">
-                <!-- <button class="btn small btn-primary" onclick="displayPontaje()">Actualizează</button> -->
-                <button class="btn small btn-danger" onclick="showConfirmModal('Șterge toate pontajele?','Această acțiune nu poate fi anulată și va șterge permanent toate datele!', clearAllPontajeConfirmed)">Șterge tot</button>
-              </div>
-              <div style="font-size:13px;color:var(--muted)">Pontajele se păstrează pe acest site.</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:22px" class="info">Calculator Pontaje Medici - FPLAYT</div>
-      </section>
-
-      <!-- SIDEBAR -->
-      <aside class="card sidebar">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h3 style="margin:0">Istoric Pontaje</h3>
-        </div>
-
-        <input id="searchDay" class="search-input" placeholder="Caută după dată (ex: 02.09.2025)" oninput="displayPontaje()" />
-
-        <div class="entries" id="pontaje">
-          <div class="empty">Nu există pontaje înregistrate încă</div>
-        </div>
-
-        <div style="margin-top:6px;font-size:13px;color:var(--muted)">Caută sau șterge rapid pontajele. Pontajele sub 30 minute se sterg automat.</div>
-      </aside>
-
-      <!-- FOOTER INFO -->
-      <div class="card p-32" style="grid-column:span 2; display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-          <div>
-            <strong>Funcționalități</strong>
-            <div class="muted">Clock‑IN / Clock‑OUT • Rotunjire la 5 minute • Închidere automată peste miezul nopții</div>
-          </div>
-          <div class="muted">MEDICI • FPLAYT</div>
-        </div>
-        <!-- <div class="muted" style="font-size:13px">Dezvoltator: Madanu • Pentru probleme: .madanu (Discord)</div> -->
-      </div>
+<!-- REGULAMENT SERVER -->
+<h2>REGULAMENT SERVER</h2>
+<div class="rule">
+    <h3 onclick="toggle(this)">1. Numele pe joc <span>▼</span></h3>
+    <div class="content">
+        1.1 Numele afișat pe chat trebuie să fie decent, fără expresii vulgare, jignitoare sau nepotrivite.<br>
+        1.2 La prima abatere se poate acorda kick. Ulterior, se poate aplica jail 60 minute + WARN.
     </div>
+</div>
 
-    <!-- TOAST -->
-    <div id="toast" class="toast"></div>
-
-    <!-- MODAL -->
-    <div id="confirmModal" class="modal">
-      <div class="modal-card">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="font-size:24px">⚠️</div>
-          <div>
-            <div id="modalTitle" class="modal-title">Confirmare</div>
-            <div id="modalMessage" class="muted" style="font-size:13px">Ești sigur?</div>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:8px">
-          <button id="modalCancel" class="btn btn-ghost small">Anulează</button>
-          <button id="modalConfirm" class="btn btn-danger small">Da</button>
-        </div>
-      </div>
+<div class="rule">
+    <h3 onclick="toggle(this)">2. Numele din buletin <span>▼</span></h3>
+    <div class="content">
+        2.1 Numele din buletin trebuie să fie roleplay și să pară realist.<br>
+        2.2 Numele puse la mișto, obscene sau jignitoare nu sunt acceptate și vor fi schimbate obligatoriu de staff.
     </div>
+</div>
 
-    <script>
-      // === Păstrăm logica originală, adaptată la noul layout ===
-      let pontaje = {};
-      let currentActiveIndex = null;
+<div class="rule">
+    <h3 onclick="toggle(this)">3. Account Sharing <span>▼</span></h3>
+    <div class="content">
+        3.1 Este strict interzis să împarți contul cu alt jucător sau să faci schimb de conturi.
+    </div>
+</div>
 
-      function saveToStorage(){
-        try{
-          localStorage.setItem('pontaje', JSON.stringify(pontaje));
-          localStorage.setItem('currentActiveIndex', JSON.stringify(currentActiveIndex));
-        }catch(e){
-          console.warn('LocalStorage indisponibil — folosește variabila globală');
-          window.pontajeData = pontaje;
-          window.currentActiveData = currentActiveIndex;
+<div class="rule">
+    <h3 onclick="toggle(this)">4. Ticket pe server <span>▼</span></h3>
+    <div class="content">
+        4.1 Ticketurile trebuie să aibă un motiv clar și serios. Ticketurile făcute la mișto sau fără motiv pot fi închise și sancționate.<br>
+        4.2 Exemple de ticket greșit: <br>
+        4.2.1 Ticket cu motiv „aaaaaaa”.<br>
+        4.2.2 Ticket fără explicație.<br>
+        4.2.3 Ticket făcut doar pentru glumă.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">5. Chat-ul serverului <span>▼</span></h3>
+    <div class="content">
+        5.1 Chat-ul serverului este OOC.<br>
+        5.2 Reguli Chat:<br>
+        5.2.1 Jignirile pe chat se sancționează cu mute.<br>
+        5.2.2 Informațiile IC scrise pe chat se sancționează cu mute.<br>
+        5.2.3 Discuțiile libere și inutile între jucători se sancționează ca Free Chat.<br>
+        5.3 Sancțiuni Chat:<br>
+        5.3.1 Jigniri pe chat: mute 120 minute.<br>
+        5.3.2 Informații IC pe chat: mute 90 minute.<br>
+        5.3.3 Free Chat: mute 60 minute.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">6. Reclamă <span>▼</span></h3>
+    <div class="content">
+        6.1 Orice reclamă către alte comunități este strict interzisă pe Crystal.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">7. Bug Abuse Minor / Major <span>▼</span></h3>
+    <div class="content">
+        7.1 Bug Abuse Minor: 7.1.1 Înseamnă folosirea unei erori a serverului pentru a obține avantaj.<br>
+        7.1.2 Exemple: Folosești SuperPunch sau anulezi animații ale armei.<br>
+        7.2 Bug Abuse Major: 7.2.1 Exemple: Duplicare bani/iteme sau exploatarea erorilor grave pentru avantaje majore.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">8. Complice Bug Abuse <span>▼</span></h3>
+    <div class="content">
+        8.1 Este interzis să primești bani/iteme provenite din bug sau să știi de o persoană care face bug abuse și să nu raportezi staffului.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">9. Cheating <span>▼</span></h3>
+    <div class="content">
+        9.1 Interzisă folosirea hack-urilor. Tentativa este sancționată.<br>
+        9.2 Urmele de hack duc la ban permanent. Trebuie să cureți complet sistemul.<br>
+        9.3 Servicii monitorizate (AppInfo, DPS, etc.) și modificări (BAM, JumpLists) pot duce la sancțiuni.<br>
+        9.4 Tentative de bypass (ștergere fișiere, log-uri, regiştri) sunt strict interzise.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">10. Complice Cheater <span>▼</span></h3>
+    <div class="content">
+        10.1 Orice jucător care știe că o persoană folosește hack și nu anunță stafful va fi sancționat.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">11. Afiliere comunități de hackeri <span>▼</span></h3>
+    <div class="content">
+        11.1 Interzis să faci parte din servere/grupuri care promovează hack-uri, bypass-uri sau metode de cheating.<br>
+        11.2 Repetarea situației după avertisment poate duce la ban permanent.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">12. Neprezentare dovezi <span>▼</span></h3>
+    <div class="content">
+        12.1 Obligatoriu filmare minim 720p la bătăi/meta (păstrată 72h).<br>
+        12.2 Sancțiuni: Neprezentare dovezi Hack (BAN 30 zile), Meta (BAN 5 zile).
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">13. Comportament neadecvat față de staff <span>▼</span></h3>
+    <div class="content">
+        13.1 Este interzis comportamentul ofensator, limbajul agresiv sau insultele grave față de membrii staff.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">14. Tranzacții OOC <span>▼</span></h3>
+    <div class="content">
+        14.1 Tranzacțiile OOC cu bani reali sunt strict interzise.<br>
+        14.2 Singura excepție este shop-ul oficial Crystal.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">15. Dovadă și interpretare <span>▼</span></h3>
+    <div class="content">
+        15.1 Orice dovadă este valabilă 72 de ore.<br>
+        15.2 Stafful are dreptul de a interpreta situațiile în funcție de context și dovezi.
+    </div>
+</div>
+
+<!-- REGULAMENT ROLEPLAY -->
+<h2>REGULAMENT ROLEPLAY</h2>
+<h1>REGULAMENT ROLEPLAY (1-39)</h1>
+
+<script>
+    function toggle(e){
+        let c = e.nextElementSibling;
+        c.style.display = c.style.display === "block" ? "none" : "block";
+    }
+</script>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">1. Roleplay <span>▼</span></h3>
+    <div class="content">
+        1.1 Roleplay-ul reprezintă interpretarea unui personaj într-un mod cât mai realist, creativ și coerent, într-o lume fictivă.<br>
+        1.2 Pe Crystal, fiecare jucător trebuie să acționeze, să vorbească și să ia decizii din perspectiva personajului său, nu din perspectiva vieții reale.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">2. IC / OOC <span>▼</span></h3>
+    <div class="content">
+        2.1 IC (In Character) înseamnă tot ce ține de joc, personaj și acțiunile din server.<br>
+        2.2 OOC (Out Of Character) înseamnă informații, discuții sau acțiuni din viața reală.<br>
+        2.3 Informațiile OOC nu trebuie folosite în IC. Orice interacțiune din joc trebuie tratată roleplay și trebuie să simuleze cât mai bine o situație reală.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">3. PK / CK <span>▼</span></h3>
+    <div class="content">
+        3.1 PK (Player Kill) înseamnă pierderea memoriei legate de roleplay-ul în care ai murit. După PK, personajul nu mai știe informațiile obținute în acel context.<br>
+        3.2 Dacă faci parte dintr-o mafie, îți asumi că poți primi PK sau poți fi exclus dacă încalci regulile organizației. Decizia aparține liderului sau co-liderului.<br>
+        3.3 Dacă primiți PK dintr-o mafie, uiți automat toate informațiile și roleplay-ul legat de acea organizație.<br>
+        3.4 CK (Character Kill) înseamnă resetarea completă a personajului: bani, mașini, case, obiecte, ore și alte bunuri pot fi șterse.<br><br>
+        3.5 Situații în care se poate acorda CK:<br>
+        3.5.1 Jucătorul rolează în comă lucruri precum „/me moare”, „/me își dă duhul” etc.<br>
+        3.5.2 Jucătorul este omorât în timp ce se află în /th, iar negociatorul nu respectă cerințele negocierii.<br>
+        3.5.3 Jucătorul este prins a doua oară jefuind de către mafii sau sindicat.<br>
+        3.5.4 Jucătorul este prins de poliție în timpul unui atentat terorist.<br>
+        3.5.5 Jucătorul ia ostatic Chestorul General al poliției și este prins ulterior.<br>
+        3.5.6 Jucătorul face intenționat un fail într-un moment de CK pentru a scăpa printr-o sancțiune OOC.<br>
+        3.5.7 După 72 de ore de la acumularea a 5 caziere, poliția poate emite mandat de arestare și se poate forma o comisie care decide dacă se aplică CK.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">4. Low Effort Roleplay <span>▼</span></h3>
+    <div class="content">
+        4.1 Low Effort Roleplay înseamnă roleplay făcut superficial, fără implicare sau fără un minim de realism.<br><br>
+        4.2 Exemple de Low Effort Roleplay:<br>
+        4.2.1 Faci accident și pleci fără să interacționezi cu persoana lovită.<br>
+        4.2.2 Tragi sau fugi pentru a evita o sancțiune minoră, cum ar fi o amendă.<br>
+        4.2.3 Faci roleplay rapid doar ca să scapi de situație.<br>
+        4.2.4 Îți repari sau speli mașina singur când există angajați la business.<br>
+        4.2.5 Dai trusă și jefuiești o persoană în comă fără să fi participat la roleplay-ul respectiv.<br>
+        4.2.6 Tragi ca polițist la roțile unui suspect fără ca acesta să aibă COD 0 declarat.<br>
+        4.2.7 Pui arma pe cineva și tragi fără somație. Înainte de foc, persoana trebuie somată. Dacă nu se conformează, se poate deschide focul.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">5. Ticket în Roleplay <span>▼</span></h3>
+    <div class="content">
+        5.1 Este interzisă deschiderea unui ticket în timpul unui Roleplay pentru motive banale sau care nu influențează desfășurarea acțiunii.<br>
+        5.2 Un ticket poate fi deschis doar dacă are loc un fail major care afectează în mod direct desfășurarea sau rezultatul Roleplay-ului și nu poate fi rezolvat în mod normal în joc.<br>
+        5.3 Scopul acestei reguli este de a evita întreruperea inutilă a Roleplay-ului și de a menține experiența de joc fluidă pentru toți participanții.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">6. Random Deathmatch (RDM) <span>▼</span></h3>
+    <div class="content">
+        6.1 RDM înseamnă omorârea unuia sau mai multor jucători fără motiv roleplay.<br>
+        6.2 Exemplu: mergi într-o zonă, scoți arma și tragi random în oamenii pe care îi vezi.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">7. Vehicle Deathmatch (VDM) <span>▼</span></h3>
+    <div class="content">
+        7.1 VDM înseamnă folosirea unui vehicul pentru a omorî sau lovi intenționat jucători într-un mod non-roleplay.<br>
+        Exemplu: calci repetat un jucător cu mașina până moare.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">8. Powergaming (PG) <span>▼</span></h3>
+    <div class="content">
+        8.1 Powergaming-ul apare atunci când faci acțiuni imposibile în viața reală sau nu oferi șanse corecte celorlalți participanți la roleplay.<br><br>
+        8.2 Exemple de Powergaming:<br>
+        8.2.1 Scoți o armă mare fără geantă sau fără să o iei dintr-un vehicul.<br>
+        8.2.2 Sari din mașină încătușat sau legat.<br>
+        8.2.3 Faci accident grav și pleci fără să rolezi.<br>
+        8.2.4 Vorbești în comă.<br>
+        8.2.5 Iei pe cineva în /cara când nu mai sunt locuri în vehicul.<br>
+        8.2.6 Ești mort/încătușat și folosești mâna la ochi pentru a vedea ID-uri.<br>
+        8.2.7 Dacă ești într-o urmărire cu poliția/civili/mafioți nu ai voie sa îți schimbi mașina la un garage, adică nu ai voie să te duci la garage și să parchezi mașina cu care ai început urmărirea și să o schimbi cu alt vehicul.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">9. No-Fear <span>▼</span></h3>
+    <div class="content">
+        9.1 No-Fear înseamnă lipsa simulării fricii într-o situație în care personajul tău ar trebui să se teamă.<br><br>
+        9.2 Exemple de No-Fear:<br>
+        9.2.1 Cineva are arma pe tine și nu te conformezi.<br>
+        9.2.2 Ataci cu un cuțit o persoană care are TEC-9 îndreptat spre tine.<br>
+        9.2.3 Ești depășit numeric și totuși scoți arma, tragi sau încerci să fugi.<br>
+        9.2.4 După ce ești imobilizat cu taser de poliție, continui fuga.<br>
+        9.2.5 Scoți arma în timp ce ești percheziționat, profitând de script.<br>
+        9.2.6 Faci brake check la peste 150 km/h.<br>
+        9.3 Drive-by-ul pentru oprirea unui vehicul aflat în mișcare nu este considerat No-Fear.<br>
+        9.4 No-Fear pentru membrii T.A.T.:<br>
+        9.4.1 Membrii T.A.T. trebuie să roleze frică doar dacă sunt depășiți cu cel puțin 3 persoane sau dacă nu au mască/cască.<br>
+        9.4.2 Situații 1vs1, 1vs2, 1vs3: membrul T.A.T. nu este obligat să roleze frică.<br>
+        9.4.3 Situație 1vs4: trebuie să roleze frică.<br>
+        9.4.4 Situații 4vs4, 4vs5, 4vs6: nu sunt obligați să roleze frică.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">10. Car Ram <span>▼</span></h3>
+    <div class="content">
+        10.1 Car Ram înseamnă lovirea repetată a altor vehicule folosind propria mașină. Regula se aplică și vehiculelor blindate ale poliției.<br><br>
+        10.2 Reguli pentru blindate:<br>
+        10.2.1 Nu ai voie să „dezăpezești” vehicule care stau pe loc.<br>
+        10.2.2 Nu sunt permise dezăpeziri între blindate; se poate folosi doar manevra PIT dacă situația o cere.<br>
+        10.2.3 Mafioții nu pot folosi intenționat blindate pentru dezăpeziri, decât dacă nu există altă variantă de scăpare.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">11. PIT Stop <span>▼</span></h3>
+    <div class="content">
+        11.1 PIT Stop este manevra prin care forțezi vehiculul urmărit să piardă controlul prin lovirea zonei spate-lateral.<br><br>
+        11.2 Reguli PIT Stop:<br>
+        11.2.1 Nu ai voie să faci PIT la peste 150 km/h.<br>
+        11.2.2 Nu ai voie să faci PIT cu vehicule din clasa A, Legendary, Premium sau Oldschool.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">12. Condus Non-RP <span>▼</span></h3>
+    <div class="content">
+        12.1 Condusul Non-RP înseamnă condus nerealist sau periculos fără motiv roleplay.<br><br>
+        12.2 Exemple de Condus Non-RP:<br>
+        12.2.1 Mergi prin oraș cu peste 200 km/h.<br>
+        12.2.2 Circuli pe contrasens fără motiv întemeiat.<br>
+        12.2.3 Aterizezi cu avionul/elicopterul în zone neamenajate.<br>
+        12.2.4 Pe drumuri neasfaltate marcate, viteza maximă este 150 km/h.<br>
+        12.2.5 Pe munți, dealuri sau teren extrem off-road, viteza maximă este 120 km/h.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">13. Metagaming <span>▼</span></h3>
+    <div class="content">
+        13.1 Metagaming înseamnă folosirea informațiilor OOC în situații IC.<br><br>
+        13.2 Exemple de Metagaming:<br>
+        13.2.1 Cineva îți spune pe Discord o locație, iar tu mergi acolo fără să fi primit informația IC.<br>
+        13.2.2 Folosești informații din afara jocului pentru a găsi nemarcate sau jucători.<br>
+        13.2.3 Revii la un roleplay după PK și te comporți ca și cum nu ai uitat nimic.<br>
+        13.2.4 Mergi ca polițist la spitalul de mafioți doar pentru că știi OOC locația.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">14. Cop-Bait <span>▼</span></h3>
+    <div class="content">
+        14.1 Cop-Bait înseamnă provocarea intenționată a poliției pentru a începe o urmărire, bătaie sau interacțiune forțată.<br><br>
+        14.2 Exemple de Cop-Bait:<br>
+        14.2.1 Faci drifturi în fața poliției doar ca să pornești o urmărire.<br>
+        14.2.2 Tragi fără motiv pentru a atrage poliția.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">15. Cop-Fear <span>▼</span></h3>
+    <div class="content">
+        15.1 Cop-Fear înseamnă lipsa fricii față de polițiști în situații în care personajul tău ar trebui să respecte autoritatea.<br><br>
+        15.2 Reguli Cop-Fear:<br>
+        15.2.1 Este interzis să iei la mișto, să jignești sau să înjuri un polițist on duty.<br>
+        15.2.2 Este interzis să ignori constant ordinele poliției.<br>
+        15.2.3 Este interzis să fugi din secția de poliție sau din curtea secției când ești arestat, chiar dacă nu vezi polițiști în zonă. Se consideră că secția este păzită.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">16. Fail Roleplay <span>▼</span></h3>
+    <div class="content">
+        16.1 Fail RP înseamnă orice acțiune nerealistă sau interzisă care strică roleplay-ul.<br><br>
+        16.2 Reguli Fail RP:<br>
+        16.2.1 Nu ai voie să porți haine de polițist/medic dacă nu faci parte din facțiune.<br>
+        16.2.2 Nu ai voie să faci ilegalități cu mașină sau uniformă de la job.<br>
+        16.2.3 Dacă îți ascunzi buletinul, ai nevoie de dovadă cu data și ora, valabilă 24 de ore.<br>
+        16.2.4 Nu ai voie să folosești iteme de la job legal în scopuri ilegale.<br>
+        16.2.5 Nu ai voie să iei un polițist mort din bătaie, să îl duci la spitalul de mafioți și apoi să îl răpești.<br>
+        16.2.6 Nu ai voie să dai trusă unui polițist mort pentru a-l răpi.<br>
+        16.2.7 Nu ai voie să furi mașini de Poliție/SMURD.<br>
+        16.2.8 Nu ai voie să intri cu vehicule în secția de poliție, spital sau magazine.<br>
+        16.2.9 Dacă la un Business sunt angajați, sunteți obligați să faceți cu ei un minim de roleplay.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">17. Provoking <span>▼</span></h3>
+    <div class="content">
+        17.1 Provoking înseamnă provocarea intenționată a altor jucători pentru a porni un conflict, o bătaie sau o urmărire fără motiv roleplay.<br>
+        17.2 Exemple de Provoking:<br>
+        17.2.1 Mergi la oameni și îi înjuri fără motiv pentru a începe ceartă.<br>
+        17.2.2 Încerci să creezi conflict fără o bază roleplay.<br>
+        17.2.3 Lovești random mașina sau personajul altui jucător ca să îl faci să reacționeze.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">18. Revenge Kill <span>▼</span></h3>
+    <div class="content">
+        18.1 Revenge Kill înseamnă să te întorci după respawn la persoana care te-a omorât și să te răzbuni.<br>
+        18.2 Exemplu: ești omorât într-un conflict, îți dai respawn, revii la acel jucător și îl omori.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">19. Suferințe / Umilire <span>▼</span></h3>
+    <div class="content">
+        19.1 Suferințele sunt jigniri, batjocuri sau umiliri adresate unui jucător aflat în comă sau într-o situație vulnerabilă. Sunt interzise atât pe server, cât și pe Discord.<br><br>
+        19.2 Exemple de Suferințe / Umilire:<br>
+        19.2.1 Omori un jucător și îi spui replici precum „la culcare”, „stai jos” etc.<br>
+        19.2.2 Jefuiești sau răpești pe cineva și îl jignești în timpul acțiunii.<br>
+        19.2.3 Obligi un jucător să stea în genunchi și să latre.<br>
+        19.2.4 Forțezi pe cineva să spună lucruri umilitoare.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">20. Disconnect în Roleplay <span>▼</span></h3>
+    <div class="content">
+        20.1 Disconnect în RP înseamnă ieșirea de pe server în timpul unei acțiuni roleplay, indiferent că este disconnect, crash sau altă metodă.<br><br>
+        20.2 Reguli Disconnect în RP:<br>
+        20.2.1 Orice disconnect neprevăzut trebuie anunțat pe Discord.<br>
+        20.2.2 Dacă problemele tehnice te avantajează, trebuie să ai dovadă video.<br>
+        20.2.3 Dacă ești mort, roleplay-ul se termină doar după respawn. Dacă ieși înainte, regula se aplică.<br><br>
+        20.3 Exemple de încălcare:<br>
+        20.3.1 Ieși după ce ai fost împușcat ca să nu pierzi bunuri.<br>
+        20.3.2 Îți provoci crash pentru a scăpa dintr-un roleplay dezavantajos.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">21. Refuz Roleplay <span>▼</span></h3>
+    <div class="content">
+        21.1 Refuz RP înseamnă refuzul de a participa la o interacțiune roleplay validă.<br>
+        21.2 Reguli Refuz RP:<br>
+        21.2.1 Nu ai voie să interacționezi cu jucători AFK.<br>
+        21.2.2 Dacă stai AFK într-o zonă rău famată, poți fi sancționat.<br>
+        21.2.3 Poți deveni AFK în timpul unui roleplay doar dacă îți cere un membru staff.<br>
+        21.2.4 Dacă ești jefuit și refuzi percheziția, se consideră Refuz RP.<br>
+        21.2.5 Dacă ești percheziționat de poliție și refuzi, poți fi sancționat.<br>
+        21.2.6 Dacă un mafiot/polițist/sindicat/medic îți cere buletinul și nu ai dovadă că l-ai pierdut/ascuns, poți fi sancționat.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">22. Roleplay Scârbos <span>▼</span></h3>
+    <div class="content">
+        22.1 Roleplay-ul scârbos reprezintă orice acțiune care provoacă dezgust, disconfort sau neplăcere celorlalți participanți.<br>
+        22.2 Acest tip de roleplay este interzis, cu excepția situațiilor în care toți participanții sunt de acord.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">23. Ostatic <span>▼</span></h3>
+    <div class="content">
+        23.1 O persoană este considerată ostatic din momentul în care se află sub comanda /th.<br><br>
+        23.2 Reguli Ostatic:<br>
+        23.2.1 Nu ai voie să ceri mai mult de 100.000$ în bani sau bunuri pentru eliberare.<br>
+        23.2.2 Dacă negociatorul refuză o ofertă rezonabilă, poate exista posibilitatea de CK.<br>
+        23.2.3 Nu ai voie să iei ostatic un prieten pentru a profita de situație.<br>
+        23.2.4 Nu ai voie să iei ostatic la jafuri de bancă/bijuterie sau în bătaia de după jaf.<br>
+        23.2.5 După ce primești trusă de la medici/poliție, trebuie să aștepți minim 10 secunde înainte de /th.<br>
+        23.2.6 Nu ai voie să ai bind pe /th.<br>
+        23.2.7 Nu ai voie să iei ostatic persoane cu inscripții S.A.S.<br>
+        23.2.8 Nu ai voie să iei pe cineva în /th și apoi să îl jefuiești.<br>
+        23.2.9 Nu ai voie să iei ostatic un jucător random care nu face parte din roleplay.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">24. Rob&Kill / Drop&Kill <span>▼</span></h3>
+    <div class="content">
+        24.1 Rob&Kill înseamnă să jefuiești o persoană și apoi să o omori.<br>
+        24.2 Drop&Kill înseamnă să pui o persoană să arunce bunuri și apoi să o omori.<br>
+        24.3 Reguli Rob&Kill / Drop&Kill:<br>
+        24.3.1 Nu ai voie să omori pe cineva, să îi dai trusă și apoi să îl jefuiești.<br>
+        24.3.2 Nu ai voie să omori pe cineva, să îl duci la spitalul de mafioți și apoi să îl jefuiești.<br>
+        24.3.3 Nu ai voie să jefuiești pe cineva și apoi să îl omori.<br>
+        24.3.4 Nu ai voie să omori un jucător doar pentru că nu îți convine ce are asupra lui.<br>
+        24.4 Excepție la Drop&Kill: stație, GoPro, telefon sau dispozitive de urmărire roleplay.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">25. Ilegalități <span>▼</span></h3>
+    <div class="content">
+        25.1 Reguli generale pentru ilegalități:<br><br>
+        25.1.1 Ai nevoie de minim 10 de ore pentru a face ilegalități.<br>
+        25.1.2 Ilegalitățile sunt permise doar între orele 19:00 și 07:00.<br>
+        25.1.3 Poți jefui doar între orele 19:00 și 07:00 pe Cayo, după aeroport.<br>
+        25.1.4 Dacă nu ai orele necesare, nu ai voie nici să participi/asisti la jaf.<br>
+        25.1.5 Nu ai voie să jefuiești lângă zone publice.<br>
+        25.1.6 Nu ai voie să jefuiești persoane aflate la job legal.<br>
+        25.1.7 Nu ai voie să jefuiești medici sau polițiști on duty.<br>
+        25.1.8 Nu ai voie să jefuiești în timp ce faci un job legal.<br>
+        25.1.9 Nu ai voie să atragi persoane de la job legal pentru a le jefui.<br>
+        25.1.10 Nu ai voie să jefuiești aceeași persoană la mai puțin de o oră.<br>
+        25.1.11 Nu ai voie să forțezi o persoană să scoată bani din bancă.<br>
+        25.1.12 Nu ai voie să iei iteme obținute din job legal sau folosite pentru acel job.<br>
+        25.1.13 Nu ai voie să iei o persoană din zonă publică și să o duci într-o zonă rău famată pentru jaf.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">26. Toxicitate  <span>▼</span></h3>
+    <div class="content">
+        26.1 Strict interzisă; sancționează jucătorii care caută scandal, ceartă, jigniri sau conflicte fără motiv.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">27. Scam <span>▼</span></h3>
+    <div class="content">
+        27.1 Scam înseamnă înșelătorie, păcăleală sau fraudă pentru a obține bani, bunuri sau avantaje.<br><br>
+        27.2 Reguli Scam:<br>
+        27.2.1 Scam-ul IC este permis doar până la suma de 10.000$.<br>
+        27.2.2 Dacă valoarea depășește 10.000$, situația este sancționabilă.<br>
+        27.2.3 Împrumuturile IC se fac pe riscul tău și nu sunt considerate automat scam.<br>
+        27.2.4 La barbut, dacă joci pe altceva decât bani prin scriptul oferit de server, îți asumi riscul să nu primești bunul.<br>
+        27.2.5 Dacă există script pentru o tranzacție sigură și alegi să nu îl folosești, nu se consideră scam sancționabil.<br>
+        27.2.6 Dacă nu există script pentru tranzacție și totul se bazează pe înțelegere verbală, nerespectarea acesteia poate fi considerată scam.<br>
+        27.2.7 Interpretarea intenționat greșită a unui preț clar este considerată tentativă de scam.<br>
+        27.2.8 Dacă alegeți să dați mașina / bunul pe Bani Murdari vă asumați deoarece NU se consideră scam sancționabil.<br>
+        27.3 Exemplu de tentativă: o mașină costă 7 milioane, iar în anunț scrie „7m”. Dacă alegi intenționat să interpretezi „7m” ca 7 mii pentru a profita, situația poate fi considerată scam.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">28. Olympic Swim <span>▼</span></h3>
+    <div class="content">
+        28.1 Olympic Swim înseamnă să fugi de poliție sau de alte persoane înotând continuu, fără pauze.<br>
+        28.2 Reguli Olympic Swim:<br>
+        28.2.1 Nu ai voie să înoți mai mult de 2 minute fără pauză.<br>
+        28.2.2 Pauza trebuie să fie de minim 15 secunde.<br>
+        28.2.3 Ai voie să înoți maxim 10 minute în total.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">29. Anunțuri CNN <span>▼</span></h3>
+    <div class="content">
+        29.1 Anunțurile CNN trebuie să fie decente și să nu facă referire directă sau indirectă la activități ilegale.<br>
+        29.2 Exemple sancționabile:<br>
+        29.2.1 „Haideți să jucăm poker.”<br>
+        29.2.2 „Vă aștept la Flecca să jucăm barbut.”<br>
+        29.2.3 „Caut familie.”<br>
+        29.2.4 „Vând jucării.”<br>
+        29.2.5 „Angajez lume/Caut de lucru la birouri.”<br>
+        29.2.6 „Caut persoane ca înființăm o familie.”<br>
+        29.2.7 Nu aveți voie să scrieți (legea nu vede). Se consideră Power-Gaming.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">30. Fake Mafia<span>▼</span></h3>
+    <div class="content">
+        30.1 Interzis ilegalități în grupuri >15 persoane fără mafie oficială.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">31. Deschidere OOC în IC <span>▼</span></h3>
+    <div class="content">
+        31.1 Deschiderea OOC în IC apare când ieși din rol în timpul unui roleplay și vorbești despre reguli, tickete sau lucruri din afara jocului.<br>
+        31.2 Exemple de Deschidere OOC în IC:<br>
+        31.2.1 „Ai făcut fail.”<br>
+        31.2.2 „Îți fac ticket.”<br>
+        31.2.3 „Ai încălcat regulamentul.”
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">32. Corupția <span>▼</span></h3>
+    <div class="content">
+        32.1 Strict interzisă în facțiuni legale.<br>
+        Exemple: păstrare iteme departament, scăpat prieteni, mită.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">33. GoPro <span>▼</span></h3>
+    <div class="content">
+        33.1 GoPro-ul este folosit pentru validarea unor întâmplări IC.<br>
+        33.2 Reguli GoPro:<br>
+        33.2.1 GoPro-ul se cumpără de la Digital Den.<br>
+        33.2.2 Este valid doar după folosire, când apare interfața de recording.<br>
+        33.2.3 GoPro-ul nu poate fi ascuns prin roleplay.<br>
+        33.2.4 Dacă îți este confiscat, filmarea devine invalidă.<br>
+        33.2.5 Dacă primești PK și apoi respawn, filmarea devine invalidă.<br>
+        33.2.6 Filmările făcute cât timp ești în comă sunt invalide. Ce este filmat înainte de comă rămâne valid.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">34. Insulte aduse femeilor <span>▼</span></h3>
+    <div class="content">
+        34.1 Este interzis comportamentul jignitor față de persoanele de sex feminin fără o interacțiune anterioară.<br>
+        34.2 Dacă o femeie refuză interacțiunea sau abordarea, trebuie să renunți politicos.<br>
+        34.3 Dacă persoana respectivă are un comportament neadecvat, poți răspunde, dar într-o manieră decentă și proporțională.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">35. Acțiuni ilegale în zone publice <span>▼</span></h3>
+    <div class="content">
+        35.1 Orice acțiune ilegală este interzisă în zone publice.<br>
+        35.2 Reguli Zone Publice:<br>
+        35.2.1 Nu ai voie să te bați fără motiv bine întemeiat.<br>
+        35.2.2 Dacă persoana intră în comă, ai obligația să o duci la spital.<br>
+        35.2.3 Nu ai voie să faci tranzacții cu obiecte ilegale în zone publice.<br>
+        35.2.4 Nu ai voie să te bați cu arme, cuțite, pumnale sau alte obiecte în zone publice.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">36. Post-Hunt <span>▼</span></h3>
+    <div class="content">
+        36.1 Post-Hunt înseamnă deschiderea repetată sau intenționată de tickete doar pentru a sancționa alți jucători, nu pentru a rezolva o problemă reală.<br>
+        36.2 Reguli Post-Hunt:<br>
+        36.2.1 Nu ai voie să faci tickete abuzive pentru a vâna sancțiuni.<br>
+        36.2.2 Dacă ai deschis ticket pentru un fail, doar tu poți cere sancționarea persoanelor implicate.<br>
+        36.2.3 Ceilalți participanți nu pot cere sancțiuni suplimentare în acel ticket dacă nu au raportat inițial situația.<br>
+        36.2.4 Nu ai voie să deschizi ticket împotriva cuiva doar ca răspuns la faptul că te-a reclamat.<br>
+        36.2.5 Nu ai voie să faci reclamații cu dovezi mai vechi de 72 de ore.<br>
+        36.2.6 Nu ai voie să faci ticket pentru un roleplay la care nu ai participat.<br>
+        36.2.7 Nu ai voie să reclami fără dovadă clară, doar pentru a căuta sancțiuni.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">37. Sindicat / Legion & Zona Sandy <span>▼</span></h3>
+    <div class="content">
+        37.1 Reguli Sindicat/Legion:<br>
+        37.1.1 Nu ai voie să jefuiești sindicatul/legionul.<br>
+        37.1.2 Nu ai voie să tragi în sindicat/legion fără să fie ultima ta cale de scăpare.<br>
+        37.1.3 Nu ai voie să te porți urât cu sindicatul/legionul.<br>
+        37.1.4 Nu ai voie să iei un /th sindicatului/legionului.<br>
+        37.1.5 Această regulă este făcută deoarece IC ar trebui să îți fie foarte frică de sindicat/legion deoarece știi că ei îți pot da CK oricând.<br>
+        37.2 Reguli Zona Sandy:<br>
+        37.2.1 Pe Sandy poți jefui 24/7.<br>
+        37.2.2 Sandy este zonă rău famată 24/7.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">38. Somare <span>▼</span></h3>
+    <div class="content">
+        - Persoana nu poate fi somata daca e in mers ( driveby )<br>
+        - Persoana nu poate fi somata pe la spate ( Daca e masina blindata la spate )<br>
+        - Pentru a soma o persoană, este necesar să îi adresezi un avertisment clar și direct, prin care să îi ceri să se oprească și să se conformeze indicațiilor primite, de exemplu: «Stai pe loc sau trag..»
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">39. Delete Nejustificat <span>▼</span></h3>
+    <div class="content">
+        39.1 Nu aveți voie să apăsați DEL degeaba în roleplay.
+    </div>
+</div>
+
+<!-- REGULAMENT JAFURI -->
+<h2>REGULAMENT JAFURI</h2>
+<div class="rule">
+    <h3 onclick="toggle(this)">1. Reguli generale pentru jafuri <span>▼</span></h3>
+    <div class="content">
+        1.1 Regulile de mai jos se aplică la toate tipurile de jaf de pe serverul Crystal.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">2. Ce NU este permis la jafuri <span>▼</span></h3>
+    <div class="content">
+        2.1 Nu aveți voie să luați ostatic în timpul jafurilor.<br>
+        2.2 Nu aveți voie să furați vehicule aparținând Poliției sau SMURD, decât dacă reprezintă ultima variantă de scăpare.<br>
+        2.3 Este interzisă blocarea intrărilor în bănci, magazine, case sau ATM-uri folosind orice tip de vehicul. Regula se aplică atât mafioților, cât și membrilor IPJ.<br>
+        2.4 Nu aveți voie să stați pe venturi în timpul unui jaf.<br>
+        2.5 Este interzisă aterizarea elicopterelor pe clădiri. Elicopterele pot fi folosite doar pentru a lăsa persoane pe clădiri inaccesibile, după care pilotul trebuie să plece imediat din zonă.<br>
+        2.6 Este interzis să vă băgați peste jaful altei organizații, adică dacă acea organizație deja a început jaful, celelalte organizații nu au ce căuta să strice jaful sau să se bage peste organizația care a început jaful.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">3. Ce este permis la jafuri <span>▼</span></h3>
+    <div class="content">
+        3.1 Este permis să furați jaful unei alte organizații.<br>
+        3.2 Polițiștii au dreptul să revină la jaf după moarte, atât timp cât jaful este încă activ.<br>
+        3.3 Medicii pot acorda truse polițiștilor în timpul jafului atunci când este declarat COD 6.<br>
+        3.4 La jafuri au voie să participe toți membrii M.A.I. din cadrul Poliției.<br>
+        3.5 Mafioții pot oferi truse persoanelor participante la jaf pe durata acestuia.<br>
+        3.6 La bătaia de după jaf pot participa doar persoanele care au fost implicate direct în jaful respectiv.<br>
+        3.7 Două mafii pot participa împreună la un jaf doar dacă există o alianță oficială între ele.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">4. Jaf Pacific <span>▼</span></h3>
+    <div class="content">
+        4.1 Pentru organizarea unui jaf la Pacific sunt necesare:<br>
+        4.1.1 O organizație neoficială+;<br>
+        4.1.2 Minim 20 de persoane;<br>
+        4.1.3 Maxim 35 de persoane.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">5. Jaf Bijuterie <span>▼</span></h3>
+    <div class="content">
+        5.1 Pentru organizarea unui jaf la Bijuterie sunt necesare:<br>
+        5.1.1 Minim 5 persoane;<br>
+        5.1.2 Maxim 10 persoane.
+    </div>
+</div>
+
+<div class="rule">
+    <h3 onclick="toggle(this)">6. Jaful ATM <span>▼</span></h3>
+    <div class="content">
+        6.1 Pentru organizarea unui jaf la ATM sunt necesare:<br>
+        6.1.1 Minim 2 persoane;<br>
+        6.1.2 Maxim 5 persoane.
+    </div>
+</div>
+
+<script>
+function toggle(e) {
+    let clickedRule = e.parentElement; 
+    let clickedContent = e.nextElementSibling;
+    
+    let allRules = document.querySelectorAll('.rule');
+    let allContents = document.querySelectorAll('.content');
+    
+    // Închidem restul și eliminăm clasa .active de pe restul
+    allContents.forEach(item => {
+        if (item !== clickedContent) {
+            item.style.display = "none";
         }
-      }
-
-      function loadFromStorage(){
-        try{
-          const s = localStorage.getItem('pontaje');
-          const a = localStorage.getItem('currentActiveIndex');
-          if(s) pontaje = JSON.parse(s);
-          if(a) currentActiveIndex = JSON.parse(a);
-        }catch(e){
-          if(window.pontajeData) pontaje = window.pontajeData;
-          if(window.currentActiveData) currentActiveIndex = window.currentActiveData;
+    });
+    
+    allRules.forEach(rule => {
+        if (rule !== clickedRule) {
+            rule.classList.remove('active');
         }
-        displayCurrentActive();
-        displayPontaje();
-      }
+    });
 
-      function showConfirmModal(title, message, cb){
-        const modal = document.getElementById('confirmModal');
-        document.getElementById('modalTitle').textContent = title;
-        document.getElementById('modalMessage').textContent = message;
-
-        const confirmBtn = document.getElementById('modalConfirm');
-        const cancelBtn = document.getElementById('modalCancel');
-
-        // cleanup previous listeners
-        const newConfirm = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-        const newCancel = cancelBtn.cloneNode(true);
-        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-
-        newConfirm.addEventListener('click', ()=>{ modal.classList.remove('active'); cb(); });
-        newCancel.addEventListener('click', ()=>{ modal.classList.remove('active'); });
-
-        modal.classList.add('active');
-      }
-
-      function hideModal(){ document.getElementById('confirmModal').classList.remove('active'); }
-
-      function showToast(msg, dur=3000){
-        const t = document.getElementById('toast');
-        t.textContent = msg; t.style.display='block';
-        setTimeout(()=>{ t.style.display='none'; }, dur);
-      }
-
-      function roundToFiveMinutes(date){ return new Date(Math.round(date.getTime()/(1000*60*5)) * 1000*60*5); }
-      function formatTime(date){ return new Date(date).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit',hour12:false}); }
-      function formatDate(date){ return new Date(date).toLocaleDateString('ro-RO',{year:'numeric',month:'2-digit',day:'2-digit'}); }
-      function formatDateDisplay(date){ return new Date(date).toLocaleDateString('ro-RO',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
-      function calculateDuration(a,b){ return Math.round((new Date(b)-new Date(a))/60000); }
-
-      function displayCurrentActive(){
-        const el = document.getElementById('currentActive');
-        const title = document.getElementById('statusTitle');
-        const sub = document.getElementById('statusSub');
-        if(!currentActiveIndex){ el.textContent='Niciun pontaj activ'; title.textContent='Niciun pontaj activ'; sub.textContent='Apasă Clock‑IN ca să începi'; return; }
-
-        const entry = pontaje[currentActiveIndex.data]?.[currentActiveIndex.index];
-        if(!entry){ currentActiveIndex = null; saveToStorage(); displayCurrentActive(); return; }
-
-        const now = new Date();
-        const duration = Math.round((now - new Date(entry.clockIn))/60000);
-        el.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px"><div><strong>Înregistrat:</strong> ${formatTime(entry.clockIn)}</div><div class="muted">${formatDateDisplay(entry.clockIn)} — ${duration} minute</div></div>`;
-        title.textContent = `Pontaj activ — ${formatTime(entry.clockIn)}`;
-        sub.textContent = `${duration} minute de la începere`;
-        document.getElementById('dailyQuick').textContent = `${Math.floor(duration/60)}h ${duration%60}m`;
-      }
-
-      function clockIn(){
-        if(currentActiveIndex){ showToast('Există deja un pontaj deschis!'); return; }
-        const now = roundToFiveMinutes(new Date());
-        const dateKey = formatDate(now);
-        if(!pontaje[dateKey]) pontaje[dateKey]=[];
-        pontaje[dateKey].push({clockIn: now, clockOut: null});
-        currentActiveIndex = {data:dateKey, index: pontaje[dateKey].length-1};
-        saveToStorage(); displayCurrentActive(); displayPontaje(); showToast(`Clock‑IN la ${formatTime(now)}`);
-      }
-
-      function clockOut(){ if(!currentActiveIndex){ showToast('Nu există pontaj activ'); return; }
-        showConfirmModal('Confirmare Clock‑OUT','Ești sigur că vrei să faci clock‑out acum?', clockOutConfirmed);
-      }
-
-      function clockOutConfirmed(){
-        const entry = pontaje[currentActiveIndex.data][currentActiveIndex.index];
-        const out = roundToFiveMinutes(new Date());
-        entry.clockOut = out;
-        const mins = calculateDuration(entry.clockIn, entry.clockOut);
-        if(mins < 30){ // anulează
-          showToast('Pontaj anulat (sub 30 minute)');
-          pontaje[currentActiveIndex.data].splice(currentActiveIndex.index,1);
-          if(pontaje[currentActiveIndex.data].length===0) delete pontaje[currentActiveIndex.data];
-          currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje(); return;
-        }
-        showToast(`Pontaj finalizat: ${mins} minute`);
-        currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje();
-      }
-
-      function forceCloseActive(){ if(!currentActiveIndex){ showToast('Nu există pontaj activ'); return; }
-        showConfirmModal('Închide forțat pontajul?','Ești sigur că vrei să închizi forțat pontajul activ? Această acțiune nu poate fi anulată!', forceCloseActiveConfirmed);
-      }
-      function forceCloseActiveConfirmed(){ if(!currentActiveIndex) return; pontaje[currentActiveIndex.data].splice(currentActiveIndex.index,1); if(pontaje[currentActiveIndex.data].length===0) delete pontaje[currentActiveIndex.data]; currentActiveIndex=null; saveToStorage(); displayCurrentActive(); displayPontaje(); showToast('Pontaj închis forțat și șters!'); }
-
-      function deletePontaj(dateKey,index){ showConfirmModal('Șterge pontajul?','Ești sigur că vrei să ștergi acest pontaj?', ()=>{ deletePontajConfirmed(dateKey,index); }); }
-      function deletePontajConfirmed(dateKey,index){ pontaje[dateKey].splice(index,1); if(pontaje[dateKey].length===0) delete pontaje[dateKey]; saveToStorage(); displayPontaje(); showToast('Pontaj șters!'); }
-
-      function calculateDailyTotal(dateKey){ if(!pontaje[dateKey]) return 0; let total=0; pontaje[dateKey].forEach(e=>{ if(e.clockOut){ const d=calculateDuration(e.clockIn,e.clockOut); if(d>=30) total+=d; } }); return total; }
-
-      function displayPontaje(){
-        const searchTerm = document.getElementById('searchDay').value.trim().toLowerCase();
-        const container = document.getElementById('pontaje'); container.innerHTML='';
-
-        const dayGroups = {};
-        Object.keys(pontaje).filter(d=> searchTerm ? d.toLowerCase().includes(searchTerm) : true).forEach(date=>{
-          const valid = pontaje[date].filter(e=> e.clockOut && calculateDuration(e.clockIn,e.clockOut)>=30 );
-          if(valid.length>0) dayGroups[date] = valid.map(e=> ({entry:e, realIndex: pontaje[date].indexOf(e)}));
-        });
-
-        if(Object.keys(dayGroups).length===0){ container.innerHTML = `<div class="empty">${searchTerm? 'Nu s-au găsit pontaje pentru căutarea specificată' : 'Nu există pontaje înregistrate încă'}</div>`; return; }
-
-        const sorted = Object.keys(dayGroups).sort((a,b)=> new Date(b.split('.').reverse().join('-')) - new Date(a.split('.').reverse().join('-')) );
-        sorted.forEach(dateKey=>{
-          const items = dayGroups[dateKey];
-          const dailyTotal = calculateDailyTotal(dateKey);
-
-          const dayEl = document.createElement('div'); dayEl.className='day-summary';
-          const dateForDisplay = new Date(dateKey.split('.').reverse().join('-'));
-          dayEl.innerHTML = `<div>${formatDateDisplay(dateForDisplay)}</div><div><strong>${Math.floor(dailyTotal/60)}h ${dailyTotal%60}m</strong> (${dailyTotal} min)</div>`;
-          container.appendChild(dayEl);
-
-          items.forEach(({entry, realIndex})=>{
-            const mins = calculateDuration(entry.clockIn, entry.clockOut);
-            const eDiv = document.createElement('div'); eDiv.className='entry';
-            eDiv.innerHTML = `<div><div style=\"font-weight:600\">${formatTime(entry.clockIn)} → ${formatTime(entry.clockOut)}</div><div class=\"meta\">${mins} minute ${entry.manual? '• manual':''}</div></div><div style=\"display:flex;flex-direction:column;gap:6px;align-items:flex-end\"><button class=\"delete\" onclick=\"deletePontaj('${dateKey}', ${realIndex})\">×</button></div>`;
-            container.appendChild(eDiv);
-          });
-        });
-      }
-
-      function clearAllPontajeConfirmed(){ if(currentActiveIndex){ showToast('Nu poți șterge datele cu pontaj activ!'); return; } if(Object.keys(pontaje).length===0){ showToast('Nu există pontaje de șters!'); return; } pontaje={}; saveToStorage(); displayPontaje(); showToast('Toate pontajele au fost șterse!'); }
-
-      function toggleManualForm(){ const f = document.getElementById('manualForm'); if(f.style.display==='block'){ f.style.display='none'; document.getElementById('manualClockIn').value=''; document.getElementById('manualClockOut').value=''; } else f.style.display='block'; }
-
-      function saveManualEntry(){ const ci = document.getElementById('manualClockIn').value; const co = document.getElementById('manualClockOut').value; if(!ci || !co){ showToast('Te rog completează toate câmpurile!'); return; }
-        const today = new Date(); const dateString = today.toISOString().split('T')[0];
-        const inDt = new Date(`${dateString}T${ci}:00`); const outDt = new Date(`${dateString}T${co}:00`);
-        if(outDt <= inDt){ showToast('Ora de ieșire trebuie să fie după ora de intrare!'); return; }
-        const dur = calculateDuration(inDt,outDt); if(dur < 30){ showToast('Durata trebuie să fie de cel puțin 30 de minute!'); return; }
-        const dk = formatDate(inDt); if(!pontaje[dk]) pontaje[dk]=[]; pontaje[dk].push({clockIn:inDt, clockOut:outDt, manual:true}); saveToStorage(); displayPontaje(); toggleManualForm(); showToast(`Pontaj manual adăugat: ${dur} minute`);
-      }
-
-      // init
-      document.addEventListener('DOMContentLoaded', ()=>{ loadFromStorage(); });
-
-      // auto-update current active display minute-by-minute
-      setInterval(()=>{ if(currentActiveIndex) displayCurrentActive(); }, 60000);
-
-      // close modal when clicking outside
-      document.getElementById('confirmModal').addEventListener('click', (e)=>{ if(e.target.id==='confirmModal') hideModal(); });
-
-    </script>
-  </body>
-
+    // Alternăm starea pentru cel curent
+    if (clickedContent.style.display === "block") {
+        clickedContent.style.display = "none";
+        clickedRule.classList.remove('active');
+    } else {
+        clickedContent.style.display = "block";
+        clickedRule.classList.add('active');
+    }
+}
+</script>
+</body>
 </html>
-
